@@ -1,3 +1,6 @@
+# Details
+https://discourse.joplinapp.org/t/create-note-from-highlighted-text/12511
+
 # Joplin Plugin
 
 This is a template to create a new Joplin plugin.
