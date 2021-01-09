@@ -5,7 +5,7 @@
   "scripts": {
     "dist": "webpack",
     "postinstall": "npm run dist", 
-    "auto": "npm run dist && APPIMAGELAUNCHER_DISABLE=y ~/Downloads/Joplin-1.4.19.AppImage --env dev"
+    "rerun": "npm run dist && APPIMAGELAUNCHER_DISABLE=y ~/Downloads/Joplin-1.5.14.AppImage --env dev"
   },
   "keywords": [],
   "license": "MIT",

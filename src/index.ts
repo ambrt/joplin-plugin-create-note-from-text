@@ -94,8 +94,9 @@ joplin.plugins.register({
 
 			}
 		})
+		// add accelerator
 		await joplin.views.toolbarButtons.create('convertToNewNoteViaToolbar', 'convertTextToNewNote', ToolbarButtonLocation.EditorToolbar);
-		await joplin.views.menuItems.create('convertToNewNoteViaMenu', 'convertTextToNewNote', MenuItemLocation.EditorContextMenu)
+		await joplin.views.menuItems.create('convertToNewNoteViaMenu', 'convertTextToNewNote', MenuItemLocation.EditorContextMenu. {accelerator:"Ctrl+Alt+N"})
 	}
 
 });
