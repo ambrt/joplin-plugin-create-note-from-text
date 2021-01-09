@@ -1,13 +1,16 @@
 {
-  "name": "joplin_plugin",
+  "name": "joplin-plugin-backlinks",
   "version": "1.0.0",
   "description": "",
   "scripts": {
     "dist": "webpack",
-    "postinstall": "npm run dist", 
-    "rerun": "npm run dist && APPIMAGELAUNCHER_DISABLE=y ~/Downloads/Joplin-1.5.14.AppImage --env dev"
+    "postinstall": "npm run dist",
+    "rerun": "npm run dist && APPIMAGELAUNCHER_DISABLE=y ~/Downloads/Joplin-1.5.14.AppImage --env dev",
+    "prepare": "npm run dist"
   },
-  "keywords": [],
+  "keywords": [
+    "joplin-plugin"
+  ],
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^14.0.14",
@@ -19,6 +22,7 @@
     "ts-loader": "^7.0.5",
     "typescript": "^3.9.3",
     "webpack": "^4.43.0",
-    "webpack-cli": "^3.3.11"
+    "webpack-cli": "^3.3.11",
+    "chalk": "^4.1.0"
   }
 }
