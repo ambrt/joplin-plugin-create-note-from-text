@@ -1,6 +1,6 @@
 {
 	"manifest_version": 1,
-	"id": "joplin-plugin-convert-text-to-new-note",
+	"id": "joplin.plugin.ambrt.convertToNewNote",
 	"app_min_version": "1.4",
 	"version": "1.3.0",
 	"name": "Convert Text To New Note",
