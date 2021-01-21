@@ -1,11 +1,12 @@
 {
-  "name": "joplin-plugin-backlinks",
-  "version": "1.0.0",
-  "description": "",
+  "name": "joplin-plugin-create-from-text",
+  "version": "1.4.1",
+  "description": "Creates new note from highlighted text",
+  "homepage":"https://discourse.joplinapp.org/t/create-note-from-highlighted-text/12511",
   "scripts": {
     "dist": "webpack",
     "postinstall": "npm run dist",
-    "rerun": "npm run dist && APPIMAGELAUNCHER_DISABLE=y ~/Downloads/Joplin-1.5.14.AppImage --env dev",
+    "distrun": "npm run dist && ~/.joplin/Joplin.AppImage --env dev",
     "prepare": "npm run dist"
   },
   "keywords": [
