@@ -80,6 +80,7 @@ joplin.plugins.register({
 				let createOrNot = false
 				if (selectedText.split('\n').length == 1) {
 					title = selectedText.split('\n')[0];
+					createOrNot = true
 
 				} else if (isDialog) {
 					
@@ -109,6 +110,7 @@ joplin.plugins.register({
 
 				} else {
 					title = selectedText.split('\n')[0];
+					createOrNot = true
 				}
 
 

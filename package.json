@@ -1,6 +1,6 @@
 {
   "name": "joplin-plugin-create-from-text",
-  "version": "1.4.1",
+  "version": "1.4.3",
   "description": "Creates new note from highlighted text",
   "homepage":"https://discourse.joplinapp.org/t/create-note-from-highlighted-text/12511",
   "scripts": {
