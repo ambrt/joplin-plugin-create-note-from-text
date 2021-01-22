@@ -95,7 +95,7 @@ joplin.plugins.register({
 
 				let title
 				let createOrNot = false
-				if (isDialog >= selectedText.split('\n')[0].split(" ").length) {
+				if (isDialog > selectedText.split('\n')[0].split(" ").length) {
 					title = selectedText.split('\n')[0];
 					createOrNot = true
 
