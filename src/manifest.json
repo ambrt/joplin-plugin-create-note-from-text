@@ -2,7 +2,7 @@
 	"manifest_version": 1,
 	"id": "joplin.plugin.ambrt.convertToNewNote",
 	"app_min_version": "1.4",
-	"version": "1.4.3",
+	"version": "1.4.4",
 	"name": "Convert Text To New Note",
 	"description": "Converts highlighted text to new one in same folder",
 	"author": "a",

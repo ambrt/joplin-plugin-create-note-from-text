@@ -32,13 +32,27 @@ joplin.plugins.register({
 		});
 
 		await joplin.settings.registerSetting('converTextToNewNoteSettingsAskForTitle', {
-			value: false,
-			type: 3,
+			value: 5,
+			type: 1,
 			section: 'convertTextToNewNoteSection',
 			public: true,
-			label: 'Ask for title if two or more lines are selected ',
+			label: 'Number of words to trigger title pop-up (0 = always ask)',
 		});
 
+		await joplin.settings.registerSetting('converTextToNewNoteSettingsBacklinkText', {
+			value: 'from ',
+			type: 2,
+			section: 'convertTextToNewNoteSection',
+			public: true,
+			label: 'Text to appear before backlink in new note',
+		});
+		await joplin.settings.registerSetting('converTextToNewNoteSettingsNoteType', {
+			value: 'note',
+			type: 2,
+			section: 'convertTextToNewNoteSection',
+			public: true,
+			label: 'Default type of note - "todo" or "note"',
+		});
 		await joplin.settings.registerSetting('converTextToNewNoteSettingsGoToNew', {
 			value: true,
 			type: 3,
@@ -68,9 +82,12 @@ joplin.plugins.register({
 				const isCopyTags = await joplin.settings.value('converTextToNewNoteSettingsCopyTags');
 				const isDialog = await joplin.settings.value('converTextToNewNoteSettingsAskForTitle')
 				const isSwitchToNew = await joplin.settings.value('converTextToNewNoteSettingsGoToNew')
+				let backReferenceText = await joplin.settings.value('converTextToNewNoteSettingsBacklinkText')
+				let noteOrTodo = await joplin.settings.value('converTextToNewNoteSettingsNoteType')
 
 				//Construct new note
-				let backReference = `from [${escapeTitleText(note.title)}](:/${note.id})`
+				
+				let backReference = `${backReferenceText} [${escapeTitleText(note.title)}](:/${note.id})`
 				let body = selectedText + "\n\n"
 				if (isBacklink) {
 					body = body + backReference
@@ -78,11 +95,11 @@ joplin.plugins.register({
 
 				let title
 				let createOrNot = false
-				if (selectedText.split('\n').length == 1) {
+				if (isDialog >= selectedText.split('\n')[0].split(" ").length) {
 					title = selectedText.split('\n')[0];
 					createOrNot = true
 
-				} else if (isDialog) {
+				} else{
 					
 
 					title = body.split('\n')[0];
@@ -108,9 +125,6 @@ joplin.plugins.register({
 					body = bodyArr.join("\n")
 				}
 
-				} else {
-					title = selectedText.split('\n')[0];
-					createOrNot = true
 				}
 
 
@@ -118,7 +132,14 @@ joplin.plugins.register({
 
 				//Create new note
 				if(createOrNot){
-				let newnote = await joplin.data.post(['notes'], null, { body: body, title: title, parent_id: folder.id });
+					let newnote
+					if(noteOrTodo.trim()=="todo"){
+						newnote = await joplin.data.post(['notes'], null, { is_todo:1,body: body, title: title, parent_id: folder.id });
+					}else{
+						newnote = await joplin.data.post(['notes'], null, { body: body, title: title, parent_id: folder.id });
+					}
+				
+
 
 				//Get tags
 				if (isCopyTags) {
@@ -131,6 +152,7 @@ joplin.plugins.register({
 					let tagId
 					let has_more = true
 					while (has_more) {
+
 						tags = await joplin.data.get(['notes', note.id, 'tags'], { page: page });
 						tags.items.forEach(async element => {
 							console.log(element)
