@@ -9,8 +9,8 @@ function escapeTitleText(text: string) {
 joplin.plugins.register({
 	onStart: async function () {
 		const dialogs = joplin.views.dialogs;
-		const handle3= await dialogs.create('myDialog3');
-		
+		const handle3 = await dialogs.create('myDialog3');
+
 		await joplin.settings.registerSection('convertTextToNewNoteSection', {
 			label: 'Convert to New Note',
 			iconName: 'fas fa-star',
@@ -60,6 +60,13 @@ joplin.plugins.register({
 			public: true,
 			label: 'Switches to newly created note',
 		});
+		await joplin.settings.registerSetting('converTextToNewNoteSettingsInsertTitle', {
+			value: false,
+			type: 3,
+			section: 'convertTextToNewNoteSection',
+			public: true,
+			label: "Don't insert title at the top of body (first line of text)",
+		});
 
 		await joplin.commands.register({
 			name: 'convertTextToNewNote',
@@ -83,10 +90,11 @@ joplin.plugins.register({
 				const isDialog = await joplin.settings.value('converTextToNewNoteSettingsAskForTitle')
 				const isSwitchToNew = await joplin.settings.value('converTextToNewNoteSettingsGoToNew')
 				let backReferenceText = await joplin.settings.value('converTextToNewNoteSettingsBacklinkText')
-				let noteOrTodo = await joplin.settings.value('converTextToNewNoteSettingsNoteType')
+				let noteOrTodo = await joplin.settings.value('converTextToNewNoteSettingsNoteType');
+				let dontInsertTitle = await joplin.settings.value('converTextToNewNoteSettingsInsertTitle');
 
 				//Construct new note
-				
+
 				let backReference = `${backReferenceText} [${escapeTitleText(note.title)}](:/${note.id})`
 				let body = selectedText + "\n\n"
 				if (isBacklink) {
@@ -99,8 +107,8 @@ joplin.plugins.register({
 					title = selectedText.split('\n')[0];
 					createOrNot = true
 
-				} else{
-					
+				} else {
+
 
 					title = body.split('\n')[0];
 					let cacheBust = Math.random();
@@ -116,14 +124,16 @@ joplin.plugins.register({
 
 
 					title = result3.formData.titleForm.title
-					if(result3.id=="cancel"){
+					if (result3.id == "cancel") {
 						createOrNot = false
-					} else{
+					} else {
 						createOrNot = true
-					let bodyArr = body.split("\n")
-					bodyArr.splice(0, 0, title)
-					body = bodyArr.join("\n")
-				}
+						if (!dontInsertTitle) { 
+							let bodyArr = body.split("\n")
+							bodyArr.splice(0, 0, title + "\n")
+							body = bodyArr.join("\n")
+						}
+					}
 
 				}
 
@@ -131,46 +141,46 @@ joplin.plugins.register({
 
 
 				//Create new note
-				if(createOrNot){
+				if (createOrNot) {
 					let newnote
-					if(noteOrTodo.trim()=="todo"){
-						newnote = await joplin.data.post(['notes'], null, { is_todo:1,body: body, title: title, parent_id: folder.id });
-					}else{
+					if (noteOrTodo.trim() == "todo") {
+						newnote = await joplin.data.post(['notes'], null, { is_todo: 1, body: body, title: title, parent_id: folder.id });
+					} else {
 						newnote = await joplin.data.post(['notes'], null, { body: body, title: title, parent_id: folder.id });
 					}
-				
-
-
-				//Get tags
-				if (isCopyTags) {
-					console.log('getting tags')
 
 
 
-					let page = 1
-					let tags
-					let tagId
-					let has_more = true
-					while (has_more) {
+					//Get tags
+					if (isCopyTags) {
+						console.log('getting tags')
 
-						tags = await joplin.data.get(['notes', note.id, 'tags'], { page: page });
-						tags.items.forEach(async element => {
-							console.log(element)
-							console.log(newnote.id)
-							await joplin.data.post(['tags', element.id, 'notes'], null, { id: newnote.id });
-						});
-						if (tags.has_more) { page = page + 1 } else { has_more = false }
 
+
+						let page = 1
+						let tags
+						let tagId
+						let has_more = true
+						while (has_more) {
+
+							tags = await joplin.data.get(['notes', note.id, 'tags'], { page: page });
+							tags.items.forEach(async element => {
+								console.log(element)
+								console.log(newnote.id)
+								await joplin.data.post(['tags', element.id, 'notes'], null, { id: newnote.id });
+							});
+							if (tags.has_more) { page = page + 1 } else { has_more = false }
+
+						}
+					}
+
+
+					//Create reference to new note
+					await joplin.commands.execute('replaceSelection', `[${escapeTitleText(title)}](:/${newnote.id})`);
+					if (isSwitchToNew) {
+						await joplin.commands.execute('openNote', newnote.id);
 					}
 				}
-
-
-				//Create reference to new note
-				await joplin.commands.execute('replaceSelection', `[${escapeTitleText(title)}](:/${newnote.id})`);
-				if (isSwitchToNew) {
-					await joplin.commands.execute('openNote', newnote.id);
-				}
-			}
 
 			}
 		})
