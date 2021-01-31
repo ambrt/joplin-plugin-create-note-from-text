@@ -71,7 +71,7 @@ joplin.plugins.register({
 		await joplin.commands.register({
 			name: 'convertTextToNewNote',
 			label: 'Convert text to new note',
-			iconName: 'fas fa-star',
+			iconName: 'fas fa-file-import',
 			execute: async () => {
 				//Get selected text
 				const selectedText = (await joplin.commands.execute('selectedText') as string);
