@@ -144,9 +144,9 @@ joplin.plugins.register({
 				if (createOrNot) {
 					let newnote
 					if (noteOrTodo.trim() == "todo") {
-						newnote = await joplin.data.post(['notes'], null, { is_todo: 1, body: body, title: title, parent_id: folder.id });
+						newnote = await joplin.data.post(['notes'], null, { is_todo: 1, body: body, title: escapeTitleText(title), parent_id: folder.id });
 					} else {
-						newnote = await joplin.data.post(['notes'], null, { body: body, title: title, parent_id: folder.id });
+						newnote = await joplin.data.post(['notes'], null, { body: body, title: escapeTitleText(title), parent_id: folder.id });
 					}
 
 
