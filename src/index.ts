@@ -125,7 +125,7 @@ joplin.plugins.register({
 		<p>Provide title</p>
 		<form name="titleForm">
 					<input type="hidden" name="rand" value='${cacheBust}' >
-			<input id="createNewTitle" type="text" value="${title.replace(/\"/g, '\'')}" name="title" autofocus >
+			<input id="createNewTitle" type="text" value="${title.replace(/\"/g, '\'')}" name="title">
 		</form>
 		<style src="#" onload="document.getElementById('createNewTitle').focus()"></style>
 
