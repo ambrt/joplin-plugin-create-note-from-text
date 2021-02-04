@@ -112,15 +112,27 @@ joplin.plugins.register({
 
 					title = body.split('\n')[0];
 					let cacheBust = Math.random();
+					await dialogs.setButtons(handle3, [
+						{
+							id: 'ok',
+						},
+						{
+							id: 'cancel',
+						}
+					]);
+
 					await dialogs.setHtml(handle3, `
 		<p>Provide title</p>
 		<form name="titleForm">
-					<input type="hidden" name="rand" value='${cacheBust}'/>
-			<input type="text" value="${title.replace(/\"/g, '\'')}" name="title"/>
+					<input type="hidden" name="rand" value='${cacheBust}' >
+			<input id="createNewTitle" type="text" value="${title.replace(/\"/g, '\'')}" name="title" autofocus >
 		</form>
+		<style src="#" onload="document.getElementById('createNewTitle').focus()"></style>
+
 		`);
 
 					let result3 = await dialogs.open(handle3);
+					//alert(JSON.stringify(result3))
 
 
 					title = result3.formData.titleForm.title
@@ -128,7 +140,7 @@ joplin.plugins.register({
 						createOrNot = false
 					} else {
 						createOrNot = true
-						if (!dontInsertTitle) { 
+						if (!dontInsertTitle) {
 							let bodyArr = body.split("\n")
 							bodyArr.splice(0, 0, title + "\n")
 							body = bodyArr.join("\n")
@@ -186,7 +198,7 @@ joplin.plugins.register({
 		})
 		// add accelerator
 		await joplin.views.toolbarButtons.create('convertToNewNoteViaToolbar', 'convertTextToNewNote', ToolbarButtonLocation.EditorToolbar);
-		await joplin.views.menuItems.create('convertToNewNoteViaMenu', 'convertTextToNewNote', MenuItemLocation.EditorContextMenu, { accelerator: "Ctrl+Alt+N" })
+		await joplin.views.menuItems.create('convertToNewNoteViaMenu', 'convertTextToNewNote', MenuItemLocation.EditorContextMenu, { accelerator: "Ctrl+Alt+N" });
 	}
 
 });
