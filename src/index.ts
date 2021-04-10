@@ -1,5 +1,6 @@
 import joplin from 'api';
 import { MenuItemLocation, ToolbarButtonLocation } from 'api/types';
+import { type } from 'os';
 
 
 function escapeTitleText(text: string) {
@@ -67,7 +68,20 @@ joplin.plugins.register({
 			public: true,
 			label: "Don't insert title at the top of body (first line of text)",
 		});
-
+		await joplin.settings.registerSetting('converTextToNewNoteSettingsCreateSubNotebook', {
+			value: false,
+			type: 3,
+			section: 'convertTextToNewNoteSection',
+			public: true,
+			label: "Create subnotebooks for converted snippets based on title of origin note",
+		});
+		await joplin.settings.registerSetting('converTextToNewNoteSettingsCreateSubNotebookPrefix', {
+			value: "Extracts from ",
+			type: 2,
+			section: 'convertTextToNewNoteSection',
+			public: true,
+			label: "Prefix for tags of notes in subnotebooks ",
+		});
 		await joplin.commands.register({
 			name: 'convertTextToNewNote',
 			label: 'Convert text to new note',
@@ -81,6 +95,7 @@ joplin.plugins.register({
 
 				// Get active folder
 				const folder = await joplin.data.get(['folders', note.parent_id]);
+				let noteParentId = folder.id
 
 
 
@@ -89,6 +104,8 @@ joplin.plugins.register({
 				const isCopyTags = await joplin.settings.value('converTextToNewNoteSettingsCopyTags');
 				const isDialog = await joplin.settings.value('converTextToNewNoteSettingsAskForTitle')
 				const isSwitchToNew = await joplin.settings.value('converTextToNewNoteSettingsGoToNew')
+				const isCreateSubnotebook = await joplin.settings.value('converTextToNewNoteSettingsCreateSubNotebook')
+				let createSubnotebookPrefix = await joplin.settings.value('converTextToNewNoteSettingsCreateSubNotebookPrefix')
 				let backReferenceText = await joplin.settings.value('converTextToNewNoteSettingsBacklinkText')
 				let noteOrTodo = await joplin.settings.value('converTextToNewNoteSettingsNoteType');
 				let dontInsertTitle = await joplin.settings.value('converTextToNewNoteSettingsInsertTitle');
@@ -102,6 +119,7 @@ joplin.plugins.register({
 				}
 
 				let title
+				let newNotebookTitle
 				let createOrNot = false
 				if (isDialog > selectedText.split('\n')[0].split(" ").length) {
 					title = selectedText.split('\n')[0];
@@ -120,12 +138,20 @@ joplin.plugins.register({
 							id: 'cancel',
 						}
 					]);
-
+					let subnotebookForm="";
+					let subnoteBookTitle=""
+					if(isCreateSubnotebook){
+						subnotebookForm = `
+						<p>Subnotebook title</p>
+						<input id="createNewSubnotebookTitle" type="text" value="${subnoteBookTitle.replace(/\"/g, '\'')}" name="subnotebooktitle">
+						`
+					}
 					await dialogs.setHtml(handle3, `
 		<p>Provide title</p>
 		<form name="titleForm">
 					<input type="hidden" name="rand" value='${cacheBust}' >
 			<input id="createNewTitle" type="text" value="${title.replace(/\"/g, '\'')}" name="title">
+			
 		</form>
 		<style src="#" onload="document.getElementById('createNewTitle').focus()"></style>
 
@@ -149,16 +175,85 @@ joplin.plugins.register({
 
 				}
 
+				
+				let subTag
+				// Create subnotebooks and tag if it doesn't exists.
+				if(isCreateSubnotebook){
+					
+					let px = createSubnotebookPrefix
+					
+					let firsNotebook
+					let notebooks = await joplin.data.get(["search"], {
+						query: escapeTitleText(note.title),
+						type:"folder",
+						fields: "id, title, parent_id"
+					  });
+					console.log("subnotebooks before creating")
+					console.log(notebooks)
+					if(notebooks.items.length>0){
+						//get
+						console.log("get notebook")
+						let createNewSub = true
+						for(let i=0;i<notebooks.items.length;i++)
+						{ // check for subnotebooks under same parent
+							if(notebooks.items[i].parent_id==note.parent_id){
+								// notebook exists in this parent, get it
 
+								firsNotebook= notebooks.items[i]
+								console.log(firsNotebook)
+								noteParentId = firsNotebook.id
+								
+								createNewSub = false
 
+							} else{
+								// this notebook is other parents
+								
+
+							}
+
+							
+						}
+						
+						if(createNewSub){
+							// same titled subnotebooks exists but in other parents
+							// so create new in this parent
+							//create
+						let newNotebook = await joplin.data.post(['folders'], null, { title: escapeTitleText(note.title), parent_id: folder.id});
+						noteParentId = newNotebook.id
+						console.log("new notebook for subnotebook")
+						console.log(newNotebook)
+						}
+
+						
+					}else{
+						//create
+						let newNotebook = await joplin.data.post(['folders'], null, { title: escapeTitleText(note.title), parent_id: folder.id});
+						noteParentId = newNotebook.id
+						console.log("new notebook for subnotebook")
+						console.log(newNotebook)
+
+					}
+					let tagTitle = px+" " + folder.title
+					let subTags = await joplin.data.get(['search'], {
+						query:escapeTitleText(tagTitle),
+						type:'tag',
+						fields: 'id, title'
+					  });
+					if(subTags.items.length>0){
+						subTag = subTags.items[0]
+					}else{
+						subTag = await joplin.data.post(['tags'], null, { title: escapeTitleText(tagTitle) });
+					}
+
+				}
 
 				//Create new note
 				if (createOrNot) {
 					let newnote
 					if (noteOrTodo.trim() == "todo") {
-						newnote = await joplin.data.post(['notes'], null, { is_todo: 1, body: body, title: escapeTitleText(title), parent_id: folder.id });
+						newnote = await joplin.data.post(['notes'], null, { is_todo: 1, body: body, title: escapeTitleText(title), parent_id: noteParentId });
 					} else {
-						newnote = await joplin.data.post(['notes'], null, { body: body, title: escapeTitleText(title), parent_id: folder.id });
+						newnote = await joplin.data.post(['notes'], null, { body: body, title: escapeTitleText(title), parent_id: noteParentId });
 					}
 
 
@@ -184,8 +279,12 @@ joplin.plugins.register({
 							if (tags.has_more) { page = page + 1 } else { has_more = false }
 
 						}
-					}
 
+					}
+					// Add tag if if its in subnotebook
+					if(isCreateSubnotebook){
+						await joplin.data.post(['tags', subTag.id, 'notes'], null, { id: newnote.id });
+					}
 
 					//Create reference to new note
 					await joplin.commands.execute('replaceSelection', `[${escapeTitleText(title)}](:/${newnote.id})`);
@@ -198,14 +297,14 @@ joplin.plugins.register({
 		})
 		// add accelerator
 		await joplin.views.toolbarButtons.create('convertToNewNoteViaToolbar', 'convertTextToNewNote', ToolbarButtonLocation.EditorToolbar);
-		
+
 		await joplin.views.menuItems.create('convertToNewNoteViaMenu', 'convertTextToNewNote', MenuItemLocation.EditorContextMenu, { accelerator: "Ctrl+Alt+N" });
 		await joplin.views.menus.create('myMenu', 'Create Note From Text', [
 			{
 				commandName: "convertTextToNewNote",
-				accelerator: "Ctrl+Alt+N" 
+				accelerator: "Ctrl+Alt+N"
 			}
-					]);
+		]);
 	}
 
 });
