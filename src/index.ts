@@ -16,72 +16,72 @@ joplin.plugins.register({
 			label: 'Convert to New Note',
 			iconName: 'fas fa-star',
 		});
-		await joplin.settings.registerSetting('converTextToNewNoteSettingsBacklink', {
+		await joplin.settings.registerSettings({'converTextToNewNoteSettingsBacklink': {
 			value: true,
 			type: 3,
 			section: 'convertTextToNewNoteSection',
 			public: true,
 			label: 'Include backlink in new note',
-		});
+    }});
 
-		await joplin.settings.registerSetting('converTextToNewNoteSettingsCopyTags', {
+		await joplin.settings.registerSettings({'converTextToNewNoteSettingsCopyTags': {
 			value: true,
 			type: 3,
 			section: 'convertTextToNewNoteSection',
 			public: true,
 			label: 'Copy tags to new note',
-		});
+    }});
 
-		await joplin.settings.registerSetting('converTextToNewNoteSettingsAskForTitle', {
+		await joplin.settings.registerSettings({'converTextToNewNoteSettingsAskForTitle': {
 			value: 5,
 			type: 1,
 			section: 'convertTextToNewNoteSection',
 			public: true,
 			label: 'Number of words to trigger title pop-up (0 = always ask)',
-		});
+		}});
 
-		await joplin.settings.registerSetting('converTextToNewNoteSettingsBacklinkText', {
+		await joplin.settings.registerSettings({'converTextToNewNoteSettingsBacklinkText': {
 			value: 'from ',
 			type: 2,
 			section: 'convertTextToNewNoteSection',
 			public: true,
 			label: 'Text to appear before backlink in new note',
-		});
-		await joplin.settings.registerSetting('converTextToNewNoteSettingsNoteType', {
+		}});
+		await joplin.settings.registerSettings({'converTextToNewNoteSettingsNoteType': {
 			value: 'note',
 			type: 2,
 			section: 'convertTextToNewNoteSection',
 			public: true,
 			label: 'Default type of note - "todo" or "note"',
-		});
-		await joplin.settings.registerSetting('converTextToNewNoteSettingsGoToNew', {
+    }});
+		await joplin.settings.registerSettings({'converTextToNewNoteSettingsGoToNew': {
 			value: true,
 			type: 3,
 			section: 'convertTextToNewNoteSection',
 			public: true,
 			label: 'Switches to newly created note',
-		});
-		await joplin.settings.registerSetting('converTextToNewNoteSettingsInsertTitle', {
+    }});
+		await joplin.settings.registerSettings({'converTextToNewNoteSettingsInsertTitle': {
 			value: false,
 			type: 3,
 			section: 'convertTextToNewNoteSection',
 			public: true,
 			label: "Don't insert title at the top of body (first line of text)",
-		});
-		await joplin.settings.registerSetting('converTextToNewNoteSettingsCreateSubNotebook', {
+    }});
+		await joplin.settings.registerSettings({'converTextToNewNoteSettingsCreateSubNotebook': {
 			value: false,
 			type: 3,
 			section: 'convertTextToNewNoteSection',
 			public: true,
 			label: "Create subnotebooks for converted snippets based on title of origin note",
-		});
-		await joplin.settings.registerSetting('converTextToNewNoteSettingsCreateSubNotebookPrefix', {
+		}});
+		await joplin.settings.registerSettings({'converTextToNewNoteSettingsCreateSubNotebookPrefix': {
 			value: "Extracts from ",
 			type: 2,
 			section: 'convertTextToNewNoteSection',
 			public: true,
 			label: "Prefix for tags of notes in subnotebooks ",
-		});
+    }});
 		await joplin.commands.register({
 			name: 'convertTextToNewNote',
 			label: 'Convert text to new note',
