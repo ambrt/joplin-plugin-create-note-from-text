@@ -22,60 +22,49 @@ joplin.plugins.register({
 			section: 'convertTextToNewNoteSection',
 			public: true,
 			label: 'Include backlink in new note',
-    }});
-
-		await joplin.settings.registerSettings({'converTextToNewNoteSettingsCopyTags': {
+    }, 'converTextToNewNoteSettingsCopyTags': {
 			value: true,
 			type: 3,
 			section: 'convertTextToNewNoteSection',
 			public: true,
 			label: 'Copy tags to new note',
-    }});
-
-		await joplin.settings.registerSettings({'converTextToNewNoteSettingsAskForTitle': {
+    }, 'converTextToNewNoteSettingsAskForTitle': {
 			value: 5,
 			type: 1,
 			section: 'convertTextToNewNoteSection',
 			public: true,
 			label: 'Number of words to trigger title pop-up (0 = always ask)',
-		}});
-
-		await joplin.settings.registerSettings({'converTextToNewNoteSettingsBacklinkText': {
+		}, 'converTextToNewNoteSettingsBacklinkText': {
 			value: 'from ',
 			type: 2,
 			section: 'convertTextToNewNoteSection',
 			public: true,
 			label: 'Text to appear before backlink in new note',
-		}});
-		await joplin.settings.registerSettings({'converTextToNewNoteSettingsNoteType': {
+		}, 'converTextToNewNoteSettingsNoteType': {
 			value: 'note',
 			type: 2,
 			section: 'convertTextToNewNoteSection',
 			public: true,
 			label: 'Default type of note - "todo" or "note"',
-    }});
-		await joplin.settings.registerSettings({'converTextToNewNoteSettingsGoToNew': {
+    }, 'converTextToNewNoteSettingsGoToNew': {
 			value: true,
 			type: 3,
 			section: 'convertTextToNewNoteSection',
 			public: true,
 			label: 'Switches to newly created note',
-    }});
-		await joplin.settings.registerSettings({'converTextToNewNoteSettingsInsertTitle': {
+    }, 'converTextToNewNoteSettingsInsertTitle': {
 			value: false,
 			type: 3,
 			section: 'convertTextToNewNoteSection',
 			public: true,
 			label: "Don't insert title at the top of body (first line of text)",
-    }});
-		await joplin.settings.registerSettings({'converTextToNewNoteSettingsCreateSubNotebook': {
+    }, 'converTextToNewNoteSettingsCreateSubNotebook': {
 			value: false,
 			type: 3,
 			section: 'convertTextToNewNoteSection',
 			public: true,
 			label: "Create subnotebooks for converted snippets based on title of origin note",
-		}});
-		await joplin.settings.registerSettings({'converTextToNewNoteSettingsCreateSubNotebookPrefix': {
+		}, 'converTextToNewNoteSettingsCreateSubNotebookPrefix': {
 			value: "Extracts from ",
 			type: 2,
 			section: 'convertTextToNewNoteSection',
