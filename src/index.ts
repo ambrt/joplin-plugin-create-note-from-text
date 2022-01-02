@@ -1,6 +1,7 @@
 import joplin from 'api';
 import { MenuItemLocation, ToolbarButtonLocation } from 'api/types';
 import { type } from 'os';
+import moment = require('moment');
 
 
 function escapeTitleText(text: string) {
@@ -70,6 +71,13 @@ joplin.plugins.register({
 			section: 'convertTextToNewNoteSection',
 			public: true,
 			label: "Prefix for tags of notes in subnotebooks ",
+		}, 'converTextToNewNoteSettingsZettelkastenPrefix': {
+			value: "",
+			description: "12-digit Zettelkasten ID, use YYYYMMDDHHmm",
+			type: 2,
+			section: 'convertTextToNewNoteSection',
+			public: true,
+			label: "Zettelkasten prefixer",
     }});
 		await joplin.commands.register({
 			name: 'convertTextToNewNote',
@@ -98,6 +106,7 @@ joplin.plugins.register({
 				let backReferenceText = await joplin.settings.value('converTextToNewNoteSettingsBacklinkText')
 				let noteOrTodo = await joplin.settings.value('converTextToNewNoteSettingsNoteType');
 				let dontInsertTitle = await joplin.settings.value('converTextToNewNoteSettingsInsertTitle');
+				let zettelkastenPrefix = await joplin.settings.value('converTextToNewNoteSettingsZettelkastenPrefix')
 
 				//Construct new note
 
@@ -239,6 +248,12 @@ joplin.plugins.register({
 				//Create new note
 				if (createOrNot) {
 					let newnote
+
+					// Concact a zettelkasten prefix to title
+					if (zettelkastenPrefix) {
+						title = moment().format(zettelkastenPrefix) + ' ' + title
+					}
+
 					if (noteOrTodo.trim() == "todo") {
 						newnote = await joplin.data.post(['notes'], null, { is_todo: 1, body: body, title: escapeTitleText(title), parent_id: noteParentId });
 					} else {
