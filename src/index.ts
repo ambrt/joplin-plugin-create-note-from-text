@@ -1,5 +1,5 @@
 import joplin from 'api';
-import { MenuItemLocation, ToolbarButtonLocation } from 'api/types';
+import { MenuItemLocation, ToolbarButtonLocation, SettingItemType } from 'api/types';
 import { type } from 'os';
 
 
@@ -42,10 +42,15 @@ joplin.plugins.register({
 			label: 'Text to appear before backlink in new note',
 		}, 'converTextToNewNoteSettingsNoteType': {
 			value: 'note',
-			type: 2,
+			type: SettingItemType.String,
 			section: 'convertTextToNewNoteSection',
+			isEnum: true,
 			public: true,
-			label: 'Default type of note - "todo" or "note"',
+			label: 'Default type of new item',
+			options: {
+				note: "note",
+				todo: "to-do",
+			},
     }, 'converTextToNewNoteSettingsGoToNew': {
 			value: true,
 			type: 3,
@@ -140,7 +145,7 @@ joplin.plugins.register({
 		<form name="titleForm">
 					<input type="hidden" name="rand" value='${cacheBust}' >
 			<input id="createNewTitle" type="text" value="${title.replace(/\"/g, '\'')}" name="title">
-			
+
 		</form>
 		<style src="#" onload="document.getElementById('createNewTitle').focus()"></style>
 
@@ -164,13 +169,13 @@ joplin.plugins.register({
 
 				}
 
-				
+
 				let subTag
 				// Create subnotebooks and tag if it doesn't exists.
 				if(isCreateSubnotebook){
-					
+
 					let px = createSubnotebookPrefix
-					
+
 					let firsNotebook
 					let notebooks = await joplin.data.get(["search"], {
 						query: escapeTitleText(note.title),
@@ -191,18 +196,18 @@ joplin.plugins.register({
 								firsNotebook= notebooks.items[i]
 								console.log(firsNotebook)
 								noteParentId = firsNotebook.id
-								
+
 								createNewSub = false
 
 							} else{
 								// this notebook is other parents
-								
+
 
 							}
 
-							
+
 						}
-						
+
 						if(createNewSub){
 							// same titled subnotebooks exists but in other parents
 							// so create new in this parent
@@ -213,7 +218,7 @@ joplin.plugins.register({
 						console.log(newNotebook)
 						}
 
-						
+
 					}else{
 						//create
 						let newNotebook = await joplin.data.post(['folders'], null, { title: escapeTitleText(note.title), parent_id: folder.id});
@@ -297,4 +302,3 @@ joplin.plugins.register({
 	}
 
 });
-
